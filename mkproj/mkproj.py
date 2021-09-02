@@ -12,7 +12,7 @@ Created on Sat Aug 28 21:31:44 2021
 """
 
 def colors():
-    return ["\033[31m" + "[ERROR]" "\033[39m ", 
+    return ["\033[31m" + "[ERROR]" + "\033[39m ", 
             "\033[32m" + "[DONE]" + "\033[39m ",
             "\033[33m" + "[WARNING]" + "\033[39m ",
             "\033[39m "]
