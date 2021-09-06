@@ -32,7 +32,7 @@ except ImportError as err:
 	print(ERROR +  f"It was not possible to import the module: {modulename}")
 	sys.exit(-1)
  
-#Get all script args
+# Get all script args
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--folder", type=str, help="Add a name to your folder project",  required=True)
@@ -43,7 +43,7 @@ def get_args():
     
     return args
 
-
+# Get path to save files
 def get_path(args):
     with open("config.json") as f:
         data = json.load(f)
@@ -116,7 +116,7 @@ class Local:
         os.system("echo cmd /k >> activate.bat")
         os.system("activate.bat")
         
-#Create git repository and upload all files
+# Create git repository and upload all files
 class Remote:
     def __init__(self, token, privacity, user, login, repos, foldername):
         self.token = token
