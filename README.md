@@ -1,7 +1,7 @@
 # MKPROJ 
 
 <p align="center">
-  <img src="https://github.com/spanishkukli/mkproj/blob/master/mkproj/src/example.gif">
+  <img src="https://github.com/spanishkukli/mkproj/blob/master/mkproj/img/example.gif">
 </p>
 
 ## Install:
