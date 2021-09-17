@@ -39,6 +39,6 @@
       -p PATH, --path PATH  Custom path for your project
       
 ## Contributing
-- [Pull requests](https://https://github.com/spanishkukli/mkproj/pulls) and stars are always welcome.
+- [Pull requests](https://github.com/spanishkukli/mkproj/pulls) and stars are always welcome.
 - For major changes, please open an [issue](https://github.com/spanishkukli/mkproj/issues) first to discuss what you would like to change.
 - Please make sure to update tests as appropriate.
