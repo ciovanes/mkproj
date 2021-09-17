@@ -2,7 +2,7 @@
 """ 
 Created on Sat Aug 28 21:31:44 2021
 @author: spanishkukli
-@summary: Make your projects more easyer.
+@summary: Make your projects more easyer and faster.
 """
 
 """"
@@ -11,13 +11,16 @@ Created on Sat Aug 28 21:31:44 2021
     py mkproj.py --help
 """
 
-def colors():
+
+
+def status():
     return ["\033[31m" + "[ERROR]" + "\033[39m ", 
             "\033[32m" + "[DONE]" + "\033[39m ",
             "\033[33m" + "[WARNING]" + "\033[39m ",
             "\033[39m "]
     
-ERROR, DONE, WARNING, RESET = colors()
+ERROR, DONE, WARNING, RESET = status()
+
 
 try:
     import os
@@ -25,13 +28,37 @@ try:
     import json
     from github import Github
     import argparse
-    from prompter import yesno
+    from datetime import datetime
    
 except ImportError as err:
 	modulename = err.args[0].partition("'")[-1].rpartition("'")[0]
 	print(ERROR +  f"It was not possible to import the module: {modulename}")
 	sys.exit(-1)
  
+# Decorator to get func execution time 
+def execution_time(func):
+    def wrapper(*args, **kwargs):
+        start_time = datetime.now()
+        func(*args, **kwargs)
+        end_time = datetime.now()
+        time = end_time - start_time
+        print("\033[32m" + "[DONE] in {0:.2f} seconds".format(time.total_seconds()) + RESET)
+    
+    return wrapper
+
+
+def yesno(text):
+    yes = ["yes", "y", ""]
+    no = ["no", "n"]
+    while True:
+        answer = input(text + "[Y/n]").lower()
+        if answer in yes:
+            return True
+        elif answer in no:
+            return False
+        else:
+            print("Invalid answer")
+
 # Get all script args
 def get_args():
     parser = argparse.ArgumentParser()
@@ -51,7 +78,7 @@ def get_path(args):
       
     #Check if there is a custom file in config.json and path arg at the same time  
     if len(custom_path) > 0 and args.path:
-        keep_it = yesno(WARNING + f"You already have an custom path on config.json, you want to keep it? \n config,json -> {custom_path}", default="yes")
+        keep_it = yesno(WARNING + f"You already have an custom path on config.json, you want to keep it? \n config.json -> {custom_path}")
         if keep_it == True:
             path = data["custom_filepath"]
         else:
@@ -146,6 +173,23 @@ class Remote:
         
         print(DONE + f"All files pushed at https://github.com/{self.login}/{self.foldername}")
 
+
+@execution_time
+def local_func(local):
+    local.make_dir()
+    local.create_local_git()
+    local.create_venv()
+    
+
+@execution_time
+def remote_func(local, remote):
+    remote.create_repo()
+    local.make_dir()
+    local.create_local_git()
+    local.create_venv()
+    remote.push_files()
+    
+  
     
 def main():
     args = get_args()
@@ -162,25 +206,19 @@ def main():
     local = Local(foldername, path, _dir)
     
     if args.local:
-        local.make_dir()
-        local.create_local_git()
-        local.create_venv()
+        local_func(local)
         local.activate_venv()
         sys.exit(0)
     
-    token, privacity = get_gh_data()
-    g = Github(token)
-    user = g.get_user()
-    login = user.login
-    repos = os.system(f"git ls-remote https://github.com/{login}/{foldername}")
-    remote = Remote(token, privacity, user, login, repos, foldername)
-    
     if args.remote:
-        remote.create_repo()
-        local.make_dir()
-        local.create_local_git()
-        local.create_venv()
-        remote.push_files()
+        token, privacity = get_gh_data()
+        g = Github(token)
+        user = g.get_user()
+        login = user.login
+        repos = os.system(f"git ls-remote https://github.com/{login}/{foldername}")
+        remote = Remote(token, privacity, user, login, repos, foldername)
+        
+        remote_func(local, remote)
         local.activate_venv()
         sys.exit(0)  
 
@@ -188,6 +226,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
