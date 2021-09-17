@@ -9,6 +9,10 @@
     git clone https://github.com/spanishkukli/mkproj.git
     cd mkproj 
     pip install -r requirements.txt  
+    
+#### Or use:
+
+    clone_proj.bat
 
 ## Get github token:
 
