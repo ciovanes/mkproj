@@ -139,9 +139,14 @@ class Local:
     
     
     def activate_venv(self):
-        os.chdir(self._dir + "\\venv\\Scripts")
-        os.system("echo cmd /k >> activate.bat")
-        os.system("activate.bat")
+        opsys = os.name
+        if opsys == "nt":
+            os.chdir(self._dir + "\\venv\\Scripts")
+            os.system("echo cmd /k >> activate.bat")
+            os.system("activate.bat")
+        else:
+            print(WARNING + f"It`s not possible to activate venv on {opsys}, actually only available on windows")
+            pass
         
 # Create git repository and upload all files
 class Remote:
@@ -170,7 +175,7 @@ class Remote:
 
         for i in push:
             os.system(i)
-        
+            
         print(DONE + f"All files pushed at https://github.com/{self.login}/{self.foldername}")
 
 
