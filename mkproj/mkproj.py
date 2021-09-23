@@ -29,12 +29,16 @@ try:
     from github import Github
     import argparse
     from datetime import datetime
-   
+       
 except ImportError as err:
 	modulename = err.args[0].partition("'")[-1].rpartition("'")[0]
 	print(ERROR +  f"It was not possible to import the module: {modulename}")
 	sys.exit(-1)
  
+ 
+# Get o.s
+opsys = os.name
+
 # Decorator to get func execution time 
 def execution_time(func):
     def wrapper(*args, **kwargs):
@@ -79,7 +83,7 @@ def get_path(args):
     #Check if there is a custom file in config.json and path arg at the same time  
     if len(custom_path) > 0 and args.path:
         keep_it = yesno(WARNING + f"You already have an custom path on config.json, you want to keep it? \n config.json -> {custom_path}")
-        if keep_it == True:
+        if keep_it is True:
             path = data["custom_filepath"]
         else:
             path = args.path
@@ -91,7 +95,7 @@ def get_path(args):
         path = os.getcwd()
    
     foldername = str(args.folder)
-    _dir = path + "\\" + foldername
+    _dir = path + "{}".format('\\' if opsys == 'nt' else '/') + foldername
         
     return foldername, path, _dir
     
@@ -106,11 +110,12 @@ def get_gh_data():
 
 # Create all local files
 class Local:
-    def __init__(self, foldername, path, _dir):
+    def __init__(self, foldername, path, _dir, opsys):
         self.foldername = foldername
         self.path = path
         self._dir = _dir
-     
+        self.opsys = opsys
+
         
     def make_dir(self):
         try:
@@ -139,14 +144,12 @@ class Local:
     
     
     def activate_venv(self):
-        opsys = os.name
-        if opsys == "nt":
+        if self.opsys == "nt":
             os.chdir(self._dir + "\\venv\\Scripts")
             os.system("echo cmd /k >> activate.bat")
             os.system("activate.bat")
         else:
             print(WARNING + f"It`s not possible to activate venv on {opsys}, actually only available on windows")
-            pass
         
 # Create git repository and upload all files
 class Remote:
@@ -208,7 +211,7 @@ def main():
         sys.exit(-1)
     
     foldername, path, _dir = get_path(args)
-    local = Local(foldername, path, _dir)
+    local = Local(foldername, path, _dir, opsys)
     
     if args.local:
         local_func(local)
